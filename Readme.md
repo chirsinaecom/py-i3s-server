@@ -1,5 +1,17 @@
-start the program
+install packages
 
 ```
-uvicorn main:app --reload
+pip install -r requirements.txt
+```
+
+start program
+
+```
+uvicorn app/main:app --reload
+```
+
+export requirements
+
+```
+pip freeze > requirements.txt
 ```
