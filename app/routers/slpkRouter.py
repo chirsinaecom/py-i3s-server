@@ -1,5 +1,5 @@
 
-from utils import abortHelper, responseHelper, slpkHelper
+from utils import abortHelper, responseHelper, slpkHelper, cacheHelper
 from fastapi import APIRouter
 from functools import wraps
 import json
@@ -7,12 +7,12 @@ from fastapi.responses import StreamingResponse
 from io import BytesIO
 import os
 from config import var
-# from main import home
+
 home = var.home
 # Initialize router
 router = APIRouter()
-
-
+cache_expire = 60
+cache = cacheHelper.cache
 abort = abortHelper.abort
 HTTPResponse = responseHelper.HTTPResponse
 read = slpkHelper.read
@@ -41,6 +41,7 @@ def stringify_response(func):
 
 
 @router.get('/')
+@cache(expire=cache_expire)
 @stringify_response
 async def list_services():
     """ List all available SLPK, with LINK to I3S service and Viewer page"""
@@ -50,6 +51,7 @@ async def list_services():
 
 @router.get('/{slpk}/SceneServer')
 @router.get('/{slpk}/SceneServer/')
+@cache(expire=cache_expire)
 @stringify_response
 async def service_info(slpk):
     """ Service information JSON """
@@ -70,6 +72,7 @@ async def service_info(slpk):
 
 @router.get('/{slpk}/SceneServer/layers/0')
 @router.get('/{slpk}/SceneServer/layers/0/')
+@cache(expire=cache_expire)
 @stringify_response
 async def layer_info(slpk):
     """ Layer information JSON """
@@ -83,6 +86,7 @@ async def layer_info(slpk):
 
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodepages')
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodepages/')
+@cache(expire=cache_expire)
 @stringify_response
 async def node_info(slpk, layer):
     NodeIndexDocument = json.loads(
@@ -95,6 +99,7 @@ async def node_info(slpk, layer):
 
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodepages/{node}')
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodepages/{node}/')
+@cache(expire=cache_expire)
 @stringify_response
 async def node_pages_info(slpk, layer, node):
     """ Node information JSON """
@@ -175,6 +180,7 @@ async def Ctextures_info(slpk, layer, node):
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodes/{node}/features/0')
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodes/{node}/features/0/')
 @stringify_response
+@cache(expire=cache_expire)
 async def feature_info(slpk, layer, node):
     """ Feature information JSON """
     if slpk not in slpks:  # Get 404 if slpk doesn't exists
@@ -188,6 +194,7 @@ async def feature_info(slpk, layer, node):
 
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodes/{node}/shared')
 @router.get('/{slpk}/SceneServer/layers/{layer}/nodes/{node}/shared/')
+@cache(expire=cache_expire)
 @stringify_response
 async def shared_info(slpk, layer, node):
     """ Shared node information JSON """
@@ -209,6 +216,7 @@ async def shared_info(slpk, layer, node):
 @router.get(
     '/{slpk}/SceneServer/layers/{layer}/nodes/{node}/attributes/{attribute}/0/'
 )
+@cache(expire=cache_expire)
 @stringify_response
 async def attribute_info(slpk, layer, node, attribute):
     """ Attribute information JSON """
