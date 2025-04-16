@@ -7,7 +7,7 @@ pip install -r requirements.txt
 start program
 
 ```
-uvicorn app/main:app --reload
+python app/main.py
 ```
 
 export requirements

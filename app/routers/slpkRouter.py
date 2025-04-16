@@ -11,7 +11,7 @@ from config import var
 home = var.home
 # Initialize router
 router = APIRouter()
-cache_expire = 60
+cache_expire = 60*10
 cache = cacheHelper.cache
 abort = abortHelper.abort
 HTTPResponse = responseHelper.HTTPResponse
@@ -216,12 +216,15 @@ async def shared_info(slpk, layer, node):
 @router.get(
     '/{slpk}/SceneServer/layers/{layer}/nodes/{node}/attributes/{attribute}/0/'
 )
-@cache(expire=cache_expire)
-@stringify_response
 async def attribute_info(slpk, layer, node, attribute):
     """ Attribute information JSON """
     if slpk not in slpks:  # Get 404 if slpk doesn't exists
         abort(404, "Can't found SLPK: %s" % slpk)
-    attr_info = json.loads(
-        await read("nodes/%s/features/0.json.gz" % node, slpk))
-    return HTTPResponse(attr_info)
+    attr_info = await read("nodes/%s/attributes/%s/0.bin.gz" %
+                           (node, attribute), slpk)
+    response = StreamingResponse(
+        BytesIO(attr_info),
+        media_type="application/octet-stream; charset=binary"
+    )
+
+    return response

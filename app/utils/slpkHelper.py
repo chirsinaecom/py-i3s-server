@@ -6,6 +6,7 @@ import zipfile
 from io import BytesIO
 from pathlib import Path
 from config import var
+import aiofiles
 # from main import home
 home = var.home
 
