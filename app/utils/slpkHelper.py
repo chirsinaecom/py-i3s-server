@@ -6,9 +6,11 @@ import zipfile
 from io import BytesIO
 from pathlib import Path
 from config import var
-import aiofiles
+# import aiofiles
+from utils import cacheHelper
 # from main import home
 home = var.home
+cache = cacheHelper.cache
 
 
 async def read_slpk(f, slpk):
@@ -28,6 +30,7 @@ async def read_slpk(f, slpk):
     return await loop.run_in_executor(None, read_from_zip)
 
 
+# @cache(expire=3600)
 async def read_eslpk(f, slpk):
     loop = asyncio.get_event_loop()
     eslpk_path = os.path.join(home, slpk)
